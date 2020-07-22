@@ -9,7 +9,7 @@ use Illuminate\Auth\Access\HandlesAuthorization;
 class TaskPolicy
 {
     use HandlesAuthorization;
-    
+
     /**
      * Determine whether the user can update the model.
      *
@@ -31,6 +31,6 @@ class TaskPolicy
      */
     public function delete(User $user, Task $task)
     {
-        return $user->id === $task->user->id && $task->isComplete;
+        return $user->id === $task->user->id && (bool) $task->isComplete;
     }
 }

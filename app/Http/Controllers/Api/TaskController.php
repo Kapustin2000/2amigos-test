@@ -26,7 +26,7 @@ class TaskController extends Controller
      */
     public function store(Request $request)
     {
-        return auth()->user()->tasks->create($request->all());
+        return auth()->user()->tasks()->create($request->all());
     }
 
     /**

@@ -18,6 +18,12 @@
 
     <!-- Styles -->
     <link href="{{ asset('css/app.css') }}" rel="stylesheet">
+
+    <link
+            rel="stylesheet"
+            type="text/css"
+            href="https://unpkg.com/todomvc-app-css@2.2.0/index.css"
+    />
 </head>
 <body>
     <div id="app">

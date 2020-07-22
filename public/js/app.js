@@ -1933,33 +1933,154 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+var filters = {
+  all: function all(todos) {
+    return todos;
+  },
+  active: function active(todos) {
+    return todos.filter(function (todo) {
+      return !todo.completed;
+    });
+  },
+  completed: function completed(todos) {
+    return todos.filter(function (todo) {
+      return todo.completed;
+    });
+  }
+};
 /* harmony default export */ __webpack_exports__["default"] = ({
   data: function data() {
     return {
-      tasks: [],
-      activeTask: false
+      todos: [],
+      newTodo: "",
+      editedTodo: null,
+      visibility: "all"
     };
   },
-  mounted: function mounted() {},
   created: function created() {
     var vm = this;
     axios.get('/api/tasks').then(function (res) {
-      vm.tasks = res.data;
+      vm.todos = res.data;
     });
   },
-  methods: {
-    editTask: function editTask(task) {
-      this.activeTask = task;
+  computed: {
+    filteredTodos: function filteredTodos() {
+      return filters[this.visibility](this.todos);
     },
-    updateTask: function updateTask() {
-      console.log(this.activeTask);
-    },
-    deleteTask: function deleteTask(task) {
-      console.log(task);
+    remaining: function remaining() {
+      return filters.active(this.todos).length;
     }
   },
-  watch: {},
-  computed: {}
+  filters: {
+    pluralize: function pluralize(n) {
+      return n === 1 ? "item" : "items";
+    }
+  },
+  methods: {
+    addTodo: function addTodo() {
+      var vm = this;
+      var value = this.newTodo && this.newTodo.trim();
+
+      if (!value) {
+        return;
+      }
+
+      axios.post('/api/tasks', {
+        name: value
+      }).then(function (response) {
+        vm.todos.push(response.data);
+        vm.newTodo = '';
+      })["catch"](function (error) {
+        console.log(error);
+      });
+    },
+    removeTodo: function removeTodo(todo) {
+      var vm = this;
+      axios["delete"]('/api/tasks/' + todo.id).then(function (response) {
+        vm.todos.splice(vm.todos.indexOf(todo), 1);
+      })["catch"](function (error) {
+        console.log(error);
+      });
+    },
+    editTodo: function editTodo(todo) {
+      this.beforeEditCache = todo.title;
+      this.editedTodo = todo;
+    },
+    setIsComplete: function setIsComplete(todo) {
+      axios.put('/api/tasks/' + todo.id, {
+        name: todo.name,
+        isComplete: !todo.isComplete
+      });
+    },
+    doneEdit: function doneEdit(todo) {
+      if (!this.editedTodo) {
+        return;
+      }
+
+      this.editedTodo = null;
+      todo.name = todo.title.trim();
+
+      if (!todo.name) {
+        this.removeTodo(todo);
+      } else {
+        axios.put('/api/tasks/' + todo.id, {
+          name: todo.name
+        });
+      }
+    },
+    cancelEdit: function cancelEdit(todo) {
+      this.editedTodo = null;
+      todo.title = this.beforeEditCache;
+    },
+    removeCompleted: function removeCompleted() {
+      this.todos = filters.active(this.todos);
+    }
+  }
 });
 
 /***/ }),
@@ -37556,151 +37677,292 @@ var render = function() {
   var _vm = this
   var _h = _vm.$createElement
   var _c = _vm._self._c || _h
-  return _c("div", { staticClass: "container" }, [
-    _vm.activeTask
-      ? _c("form", [
-          _c("p", [_vm._v("Edit task")]),
-          _vm._v(" "),
-          _c("input", {
-            directives: [
-              {
-                name: "model",
-                rawName: "v-model",
-                value: _vm.activeTask.name,
-                expression: "activeTask.name"
-              }
-            ],
-            attrs: { name: "name" },
-            domProps: { value: _vm.activeTask.name },
-            on: {
-              input: function($event) {
-                if ($event.target.composing) {
-                  return
-                }
-                _vm.$set(_vm.activeTask, "name", $event.target.value)
-              }
+  return _c("div", { staticClass: "todoapp" }, [
+    _c("header", { staticClass: "header" }, [
+      _c("h1", [_vm._v("todos")]),
+      _vm._v(" "),
+      _c("input", {
+        directives: [
+          {
+            name: "model",
+            rawName: "v-model",
+            value: _vm.newTodo,
+            expression: "newTodo"
+          }
+        ],
+        staticClass: "new-todo",
+        attrs: {
+          autofocus: "",
+          autocomplete: "off",
+          placeholder: "What needs to be done?"
+        },
+        domProps: { value: _vm.newTodo },
+        on: {
+          keyup: function($event) {
+            if (
+              !$event.type.indexOf("key") &&
+              _vm._k($event.keyCode, "enter", 13, $event.key, "Enter")
+            ) {
+              return null
             }
-          }),
-          _vm._v(" "),
-          _c("input", {
-            directives: [
-              {
-                name: "model",
-                rawName: "v-model",
-                value: _vm.activeTask.isComplete,
-                expression: "activeTask.isComplete"
-              }
-            ],
-            attrs: { type: "checkbox", name: "isComplete" },
-            domProps: {
-              checked: Array.isArray(_vm.activeTask.isComplete)
-                ? _vm._i(_vm.activeTask.isComplete, null) > -1
-                : _vm.activeTask.isComplete
-            },
-            on: {
-              change: function($event) {
-                var $$a = _vm.activeTask.isComplete,
-                  $$el = $event.target,
-                  $$c = $$el.checked ? true : false
-                if (Array.isArray($$a)) {
-                  var $$v = null,
-                    $$i = _vm._i($$a, $$v)
-                  if ($$el.checked) {
-                    $$i < 0 &&
-                      _vm.$set(_vm.activeTask, "isComplete", $$a.concat([$$v]))
-                  } else {
-                    $$i > -1 &&
-                      _vm.$set(
-                        _vm.activeTask,
-                        "isComplete",
-                        $$a.slice(0, $$i).concat($$a.slice($$i + 1))
-                      )
-                  }
-                } else {
-                  _vm.$set(_vm.activeTask, "isComplete", $$c)
-                }
-              }
+            return _vm.addTodo($event)
+          },
+          input: function($event) {
+            if ($event.target.composing) {
+              return
             }
-          }),
-          _vm._v(" "),
-          _c(
-            "button",
-            {
-              on: {
-                click: function($event) {
-                  $event.preventDefault()
-                  return _vm.updateTask($event)
-                }
-              }
-            },
-            [_vm._v("update")]
-          )
-        ])
-      : _c("form", [
-          _c("p", [_vm._v("Create task")]),
-          _vm._v(" "),
-          _c("input", { attrs: { name: "name" } }),
-          _vm._v(" "),
-          _c("input", { attrs: { type: "checkbox", name: "isComplete" } }),
-          _vm._v(" "),
-          _c(
-            "button",
-            {
-              on: {
-                click: function($event) {
-                  $event.preventDefault()
-                  return _vm.update($event)
-                }
-              }
-            },
-            [_vm._v("update")]
-          )
-        ]),
-    _vm._v(" "),
-    _c("br"),
-    _c("br"),
-    _c("br"),
+            _vm.newTodo = $event.target.value
+          }
+        }
+      })
+    ]),
     _vm._v(" "),
     _c(
-      "ul",
-      _vm._l(_vm.tasks, function(task) {
-        return _vm.tasks.length > 0
-          ? _c("li", [
-              _c("span", [_vm._v(_vm._s(task.name))]),
-              _vm._v(" "),
-              _c(
-                "span",
-                {
-                  on: {
-                    click: function($event) {
-                      return _vm.editTask(task)
+      "section",
+      {
+        directives: [
+          {
+            name: "show",
+            rawName: "v-show",
+            value: _vm.todos.length,
+            expression: "todos.length"
+          }
+        ],
+        staticClass: "main"
+      },
+      [
+        _c(
+          "ul",
+          { staticClass: "todo-list" },
+          _vm._l(_vm.filteredTodos, function(todo) {
+            return _c(
+              "li",
+              {
+                key: todo.id,
+                staticClass: "todo",
+                class: {
+                  completed: todo.isComplete,
+                  editing: todo == _vm.editedTodo
+                }
+              },
+              [
+                _c("div", { staticClass: "view" }, [
+                  _c("input", {
+                    directives: [
+                      {
+                        name: "model",
+                        rawName: "v-model",
+                        value: todo.isComplete,
+                        expression: "todo.isComplete"
+                      }
+                    ],
+                    staticClass: "toggle",
+                    attrs: { type: "checkbox" },
+                    domProps: {
+                      checked: Array.isArray(todo.isComplete)
+                        ? _vm._i(todo.isComplete, null) > -1
+                        : todo.isComplete
+                    },
+                    on: {
+                      click: function($event) {
+                        return _vm.setIsComplete(todo)
+                      },
+                      change: function($event) {
+                        var $$a = todo.isComplete,
+                          $$el = $event.target,
+                          $$c = $$el.checked ? true : false
+                        if (Array.isArray($$a)) {
+                          var $$v = null,
+                            $$i = _vm._i($$a, $$v)
+                          if ($$el.checked) {
+                            $$i < 0 &&
+                              _vm.$set(todo, "isComplete", $$a.concat([$$v]))
+                          } else {
+                            $$i > -1 &&
+                              _vm.$set(
+                                todo,
+                                "isComplete",
+                                $$a.slice(0, $$i).concat($$a.slice($$i + 1))
+                              )
+                          }
+                        } else {
+                          _vm.$set(todo, "isComplete", $$c)
+                        }
+                      }
                     }
-                  }
-                },
-                [_vm._v("Edit")]
-              ),
-              _vm._v(" "),
-              task.isComplete
-                ? _c(
-                    "span",
+                  }),
+                  _vm._v(" "),
+                  _c(
+                    "label",
                     {
                       on: {
-                        click: function($event) {
-                          return _vm.deleteTask(task)
+                        dblclick: function($event) {
+                          return _vm.editTodo(todo)
                         }
                       }
                     },
-                    [_vm._v("Delete")]
-                  )
-                : _vm._e()
-            ])
-          : _c("li", [_vm._v("No tasks yet")])
-      }),
-      0
-    )
+                    [_vm._v(_vm._s(todo.name))]
+                  ),
+                  _vm._v(" "),
+                  todo.isComplete
+                    ? _c("button", {
+                        staticClass: "destroy",
+                        on: {
+                          click: function($event) {
+                            return _vm.removeTodo(todo)
+                          }
+                        }
+                      })
+                    : _vm._e()
+                ]),
+                _vm._v(" "),
+                _c("input", {
+                  directives: [
+                    {
+                      name: "model",
+                      rawName: "v-model",
+                      value: todo.title,
+                      expression: "todo.title"
+                    }
+                  ],
+                  staticClass: "edit",
+                  attrs: { type: "text" },
+                  domProps: { value: todo.title },
+                  on: {
+                    blur: function($event) {
+                      return _vm.doneEdit(todo)
+                    },
+                    keyup: [
+                      function($event) {
+                        if (
+                          !$event.type.indexOf("key") &&
+                          _vm._k(
+                            $event.keyCode,
+                            "enter",
+                            13,
+                            $event.key,
+                            "Enter"
+                          )
+                        ) {
+                          return null
+                        }
+                        return _vm.doneEdit(todo)
+                      },
+                      function($event) {
+                        if (
+                          !$event.type.indexOf("key") &&
+                          _vm._k($event.keyCode, "esc", 27, $event.key, [
+                            "Esc",
+                            "Escape"
+                          ])
+                        ) {
+                          return null
+                        }
+                        return _vm.cancelEdit(todo)
+                      }
+                    ],
+                    input: function($event) {
+                      if ($event.target.composing) {
+                        return
+                      }
+                      _vm.$set(todo, "title", $event.target.value)
+                    }
+                  }
+                })
+              ]
+            )
+          }),
+          0
+        )
+      ]
+    ),
+    _vm._v(" "),
+    _c(
+      "footer",
+      {
+        directives: [
+          {
+            name: "show",
+            rawName: "v-show",
+            value: _vm.todos.length,
+            expression: "todos.length"
+          }
+        ],
+        staticClass: "footer"
+      },
+      [
+        _c("span", { staticClass: "todo-count" }, [
+          _c("strong", [_vm._v(_vm._s(_vm.remaining))]),
+          _vm._v(
+            " " + _vm._s(_vm._f("pluralize")(_vm.remaining)) + " left\n    "
+          )
+        ]),
+        _vm._v(" "),
+        _c("ul", { staticClass: "filters" }, [
+          _c("li", [
+            _c(
+              "a",
+              {
+                class: { selected: _vm.visibility == "all" },
+                on: {
+                  click: function($event) {
+                    $event.preventDefault()
+                    _vm.visibility = "all"
+                  }
+                }
+              },
+              [_vm._v("All")]
+            )
+          ]),
+          _vm._v(" "),
+          _c("li", [
+            _c(
+              "a",
+              {
+                class: { selected: _vm.visibility == "active" },
+                on: {
+                  click: function($event) {
+                    $event.preventDefault()
+                    _vm.visibility = "active"
+                  }
+                }
+              },
+              [_vm._v("Active")]
+            )
+          ]),
+          _vm._v(" "),
+          _c("li", [
+            _c(
+              "a",
+              {
+                class: { selected: _vm.visibility == "completed" },
+                on: {
+                  click: function($event) {
+                    $event.preventDefault()
+                    _vm.visibility = "completed"
+                  }
+                }
+              },
+              [_vm._v("Completed")]
+            )
+          ])
+        ])
+      ]
+    ),
+    _vm._v(" "),
+    _vm._m(0)
   ])
 }
-var staticRenderFns = []
+var staticRenderFns = [
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c("footer", { staticClass: "info" }, [
+      _c("p", [_vm._v("Double-click to edit a todo")])
+    ])
+  }
+]
 render._withStripped = true
 
 
