@@ -1921,10 +1921,45 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 /* harmony default export */ __webpack_exports__["default"] = ({
-  mounted: function mounted() {
-    console.log('Component mounted.');
-  }
+  data: function data() {
+    return {
+      tasks: [],
+      activeTask: false
+    };
+  },
+  mounted: function mounted() {},
+  created: function created() {
+    var vm = this;
+    axios.get('/api/tasks').then(function (res) {
+      vm.tasks = res.data;
+    });
+  },
+  methods: {
+    editTask: function editTask(task) {
+      this.activeTask = task;
+    },
+    updateTask: function updateTask() {
+      console.log(this.activeTask);
+    },
+    deleteTask: function deleteTask(task) {
+      console.log(task);
+    }
+  },
+  watch: {},
+  computed: {}
 });
 
 /***/ }),
@@ -37521,26 +37556,151 @@ var render = function() {
   var _vm = this
   var _h = _vm.$createElement
   var _c = _vm._self._c || _h
-  return _vm._m(0)
-}
-var staticRenderFns = [
-  function() {
-    var _vm = this
-    var _h = _vm.$createElement
-    var _c = _vm._self._c || _h
-    return _c("div", { staticClass: "container" }, [
-      _c("div", { staticClass: "row justify-content-center" }, [
-        _c("div", { staticClass: "col-md-8" }, [
-          _c("div", { staticClass: "card" }, [
-            _c("div", { staticClass: "card-header" }, [
-              _vm._v("Task list component")
-            ])
-          ])
+  return _c("div", { staticClass: "container" }, [
+    _vm.activeTask
+      ? _c("form", [
+          _c("p", [_vm._v("Edit task")]),
+          _vm._v(" "),
+          _c("input", {
+            directives: [
+              {
+                name: "model",
+                rawName: "v-model",
+                value: _vm.activeTask.name,
+                expression: "activeTask.name"
+              }
+            ],
+            attrs: { name: "name" },
+            domProps: { value: _vm.activeTask.name },
+            on: {
+              input: function($event) {
+                if ($event.target.composing) {
+                  return
+                }
+                _vm.$set(_vm.activeTask, "name", $event.target.value)
+              }
+            }
+          }),
+          _vm._v(" "),
+          _c("input", {
+            directives: [
+              {
+                name: "model",
+                rawName: "v-model",
+                value: _vm.activeTask.isComplete,
+                expression: "activeTask.isComplete"
+              }
+            ],
+            attrs: { type: "checkbox", name: "isComplete" },
+            domProps: {
+              checked: Array.isArray(_vm.activeTask.isComplete)
+                ? _vm._i(_vm.activeTask.isComplete, null) > -1
+                : _vm.activeTask.isComplete
+            },
+            on: {
+              change: function($event) {
+                var $$a = _vm.activeTask.isComplete,
+                  $$el = $event.target,
+                  $$c = $$el.checked ? true : false
+                if (Array.isArray($$a)) {
+                  var $$v = null,
+                    $$i = _vm._i($$a, $$v)
+                  if ($$el.checked) {
+                    $$i < 0 &&
+                      _vm.$set(_vm.activeTask, "isComplete", $$a.concat([$$v]))
+                  } else {
+                    $$i > -1 &&
+                      _vm.$set(
+                        _vm.activeTask,
+                        "isComplete",
+                        $$a.slice(0, $$i).concat($$a.slice($$i + 1))
+                      )
+                  }
+                } else {
+                  _vm.$set(_vm.activeTask, "isComplete", $$c)
+                }
+              }
+            }
+          }),
+          _vm._v(" "),
+          _c(
+            "button",
+            {
+              on: {
+                click: function($event) {
+                  $event.preventDefault()
+                  return _vm.updateTask($event)
+                }
+              }
+            },
+            [_vm._v("update")]
+          )
         ])
-      ])
-    ])
-  }
-]
+      : _c("form", [
+          _c("p", [_vm._v("Create task")]),
+          _vm._v(" "),
+          _c("input", { attrs: { name: "name" } }),
+          _vm._v(" "),
+          _c("input", { attrs: { type: "checkbox", name: "isComplete" } }),
+          _vm._v(" "),
+          _c(
+            "button",
+            {
+              on: {
+                click: function($event) {
+                  $event.preventDefault()
+                  return _vm.update($event)
+                }
+              }
+            },
+            [_vm._v("update")]
+          )
+        ]),
+    _vm._v(" "),
+    _c("br"),
+    _c("br"),
+    _c("br"),
+    _vm._v(" "),
+    _c(
+      "ul",
+      _vm._l(_vm.tasks, function(task) {
+        return _vm.tasks.length > 0
+          ? _c("li", [
+              _c("span", [_vm._v(_vm._s(task.name))]),
+              _vm._v(" "),
+              _c(
+                "span",
+                {
+                  on: {
+                    click: function($event) {
+                      return _vm.editTask(task)
+                    }
+                  }
+                },
+                [_vm._v("Edit")]
+              ),
+              _vm._v(" "),
+              task.isComplete
+                ? _c(
+                    "span",
+                    {
+                      on: {
+                        click: function($event) {
+                          return _vm.deleteTask(task)
+                        }
+                      }
+                    },
+                    [_vm._v("Delete")]
+                  )
+                : _vm._e()
+            ])
+          : _c("li", [_vm._v("No tasks yet")])
+      }),
+      0
+    )
+  ])
+}
+var staticRenderFns = []
 render._withStripped = true
 
 
@@ -49724,6 +49884,14 @@ module.exports = function(module) {
 __webpack_require__(/*! ./bootstrap */ "./resources/js/bootstrap.js");
 
 window.Vue = __webpack_require__(/*! vue */ "./node_modules/vue/dist/vue.common.js");
+window.axios = __webpack_require__(/*! axios */ "./node_modules/axios/index.js");
+var token = document.head.querySelector('meta[name="csrf-token"]');
+
+if (token) {
+  window.axios.defaults.headers.common['X-CSRF-TOKEN'] = token.content;
+} else {
+  console.error('CSRF token not found: https://laravel.com/docs/csrf#csrf-x-csrf-token');
+}
 /**
  * The following block of code may be used to automatically register your
  * Vue components. It will recursively scan this directory for the Vue
@@ -49733,6 +49901,7 @@ window.Vue = __webpack_require__(/*! vue */ "./node_modules/vue/dist/vue.common.
  */
 // const files = require.context('./', true, /\.vue$/i)
 // files.keys().map(key => Vue.component(key.split('/').pop().split('.')[0], files(key).default))
+
 
 Vue.component('tasks-list', __webpack_require__(/*! ./components/TasksListComponent.vue */ "./resources/js/components/TasksListComponent.vue")["default"]);
 /**

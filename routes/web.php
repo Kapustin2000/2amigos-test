@@ -20,3 +20,7 @@ Route::get('/', function () {
 Auth::routes();
 
 Route::get('/tasks', 'TaskController@index')->name('tasks');
+
+Route::middleware(['web'])->prefix('api')->group(function () {
+    Route::get('/tasks', 'Api\TaskController@index');
+});
