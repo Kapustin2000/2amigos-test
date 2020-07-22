@@ -28,4 +28,12 @@ Route::middleware(['web'])->prefix('api')->group(function () {
         'index', 'store', 'update', 'destroy'
     ]);
 
+    Route::get('/tasks', 'Api\TaskController@index');
+    Route::post('/tasks', 'Api\TaskController@store');
+    Route::get('/tasks/{task:id}', 'Api\TaskController@update')->middleware('can:update,task');
+    Route::delete('/tasks/{task:id}', 'Api\TaskController@destroy')->middleware('can:delete,task');
+
+
+
+
 });
