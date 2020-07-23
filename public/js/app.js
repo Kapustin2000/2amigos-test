@@ -1984,12 +1984,12 @@ var filters = {
   },
   active: function active(todos) {
     return todos.filter(function (todo) {
-      return !todo.completed;
+      return !todo.isComplete;
     });
   },
   completed: function completed(todos) {
     return todos.filter(function (todo) {
-      return todo.completed;
+      return todo.isComplete;
     });
   }
 };

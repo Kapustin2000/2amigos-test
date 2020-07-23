@@ -75,12 +75,12 @@
         },
         active: function(todos) {
             return todos.filter(function(todo) {
-                return !todo.completed;
+                return !todo.isComplete;
             });
         },
         completed: function(todos) {
             return todos.filter(function(todo) {
-                return todo.completed;
+                return todo.isComplete;
             });
         }
     };
