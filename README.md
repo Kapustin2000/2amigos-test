@@ -1,4 +1,14 @@
+<p>Api documentation</p>
+<b>To access api you have to be authorized ( auth middleware) <b>
+  <p>Api endpoints</p>
+<ul>
+  <li>GET api/tasks - to get tasks created by you</li>
+  <li>POST api/tasks - to create a new task<li>
+  <li>PUT api/tasks/{task:id} - to update a task<li>
+</ul>
 
+
+<br>
 <p>Тестовое задание</p>
 <p>Ориентировочное время на выполнение задачи 2-4 часа</p>
 <p>Разработать API туду листа на Laravel 7</p>
