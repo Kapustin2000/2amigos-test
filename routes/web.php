@@ -19,11 +19,11 @@ Route::get('/', function () {
 
 Auth::routes();
 
-Route::get('/tasks', 'TaskController@index')->middleware('web')->name('tasks');
+Route::get('/tasks', 'TaskController@index')->middleware('auth')->name('tasks');
 
 
 //Bro, I didn't want to use tokens
-Route::middleware(['web'])->prefix('api')->group(function () {
+Route::middleware(['auth'])->prefix('api')->group(function () {
 
     Route::resource('tasks', 'Api\TaskController')->only([
         'index', 'store', 'update', 'destroy'
