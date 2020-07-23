@@ -1,10 +1,10 @@
 <p>Api documentation</p>
-<b>To access api you have to be authorized ( auth middleware) <b>
-  <p>Api endpoints</p>
+<b>To access api you have to be authorized ( auth middleware)</b>
+<p>Api endpoints</p>
 <ul>
   <li>GET api/tasks - to get tasks created by you</li>
-  <li>POST api/tasks - to create a new task<li>
-  <li>PUT api/tasks/{task:id} - to update a task<li>
+  <li>POST api/tasks - to create a new task</li>
+  <li>PUT api/tasks/{task:id} - to update a task</li>
 </ul>
 
 
